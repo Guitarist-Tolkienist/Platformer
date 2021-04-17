@@ -1,11 +1,12 @@
 #ifndef PLATFORMER_CHITBOX_H
 #define PLATFORMER_CHITBOX_H
 
+#include "SFML/Graphics.hpp"
 #include "MATH.h"
 
 using namespace _2D;
 
-class CHitBox {
+class CHitBox : sf::Drawable{
     SVector_2D m_Position;
 
     // size of the Entity (i.e. 2D vector)
@@ -13,6 +14,8 @@ class CHitBox {
 public:
     CHitBox();
     CHitBox(const SVector_2D&, const SVector_2D&);
+
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
     SVector_2D GetPosition() const;
     SVector_2D GetScale() const;

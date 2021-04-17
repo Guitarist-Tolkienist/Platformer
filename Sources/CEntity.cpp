@@ -40,14 +40,17 @@ CEntity::~CEntity() {
     }
 }
 
-void CEntity::Move(MovingState key) {
-    if (key == MovingState::Left ||
-        key == MovingState::Right) {
-        m_bMoving = true;
-    }
 
-    if (key == MovingState::None) {
-        m_bMoving = false;
+void CEntity::Move(MovingState key) {
+    switch (key) {
+        case MovingState::Left:
+        case MovingState::Right:
+            m_bMoving = true;
+            break;
+        case MovingState::None:
+            m_bMoving = false;
+            break;
+        default: break;
     }
 
     m_MovingState = key;

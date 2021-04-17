@@ -40,21 +40,11 @@ char* CPlayer::getName() const {
 }
 
 void CPlayer::draw(sf::RenderTarget &target, sf::RenderStates states) const {
-    SVector_2D pos = m_HitBox.GetPosition();
-    SVector_2D scale = m_HitBox.GetScale();
-
     if (bIsHitBoxSelected) {
-        sf::RectangleShape PlayerHitBox(sf::Vector2f(scale.m_X, scale.m_Y));
-        PlayerHitBox.setPosition(sf::Vector2f(pos.m_X, pos.m_Y));
-        PlayerHitBox.setOutlineThickness(1.0f);
-        PlayerHitBox.setOutlineColor(sf::Color::Red);
-        PlayerHitBox.setFillColor(sf::Color::Transparent);
-
-        target.draw(PlayerHitBox, states);
+        m_HitBox.draw(target, states);
     }
 
     target.draw(*m_Sprite, states);
-
     target.draw(m_Text);
 }
 

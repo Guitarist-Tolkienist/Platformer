@@ -1,7 +1,6 @@
 #ifndef PLATFORMER_CENTITY_H
 #define PLATFORMER_CENTITY_H
 
-#include "SFML/Graphics.hpp"
 #include <iostream>
 #include "CHitBox.h"
 #include "CUpdateable.h"
@@ -38,7 +37,7 @@ public:
     CEntity(const CHitBox& HitBox, const char* spriteFilename, float HP);
     ~CEntity();
 
-    void Move(const MovingState);
+    void Move(MovingState);
     void SetLocation(SVector_2D NewLocation);
     SVector_2D GetLocation() const;
     SVector_2D GetScale() const;

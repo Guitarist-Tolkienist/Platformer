@@ -53,7 +53,6 @@ const int WINDOW_WIDTH1 = 1720.f;
 const int WINDOW_HEIGHT2 = 1080.f;
 
 int main() {
-
     CAssets::GetInstance().Load();
     CGameModel Model;
 

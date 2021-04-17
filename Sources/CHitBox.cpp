@@ -24,3 +24,16 @@ SVector_2D CHitBox::GetScale() const {
 SVector_2D CHitBox::SetScale(SVector_2D NewScale) {
     m_Scale = NewScale;
 }
+
+void CHitBox::draw(sf::RenderTarget &target, sf::RenderStates states) const {
+    SVector_2D pos = GetPosition();
+    SVector_2D scale = GetScale();
+
+    sf::RectangleShape PlayerHitBox(sf::Vector2f(scale.m_X, scale.m_Y));
+    PlayerHitBox.setPosition(sf::Vector2f(pos.m_X, pos.m_Y));
+    PlayerHitBox.setOutlineThickness(1.0f);
+    PlayerHitBox.setOutlineColor(sf::Color::Red);
+    PlayerHitBox.setFillColor(sf::Color::Transparent);
+
+    target.draw(PlayerHitBox, states);
+}
