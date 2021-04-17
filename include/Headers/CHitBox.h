@@ -6,6 +6,8 @@
 
 using namespace _2D;
 
+const int HITBOX_SCALE_DEFAULT = 100;
+
 class CHitBox : sf::Drawable{
     SVector_2D m_Position;
 
@@ -20,8 +22,8 @@ public:
     SVector_2D GetPosition() const;
     SVector_2D GetScale() const;
 
-    SVector_2D SetPosition(SVector_2D);
-    SVector_2D SetScale(SVector_2D);
+    SVector_2D SetPosition(const SVector_2D&);
+    SVector_2D SetScale(const SVector_2D&);
 };
 
 
