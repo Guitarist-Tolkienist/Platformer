@@ -9,7 +9,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include_directories(include)
 include_directories(include/Headers)
 include_directories(Sources)
-file(GLOB SOURCE_FILES "Sources/*.cpp" CTimer.cpp)
+file(GLOB SOURCE_FILES "Sources/*.cpp" Timer/CTimer.cpp)
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
 # SFML
