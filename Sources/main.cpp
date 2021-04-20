@@ -1,58 +1,14 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
-#include <SFML/Network.hpp>
 #include <SFML/Window.hpp>
-
 
 #include "CAssets.h"
 #include "CGameModel.h"
 #include "CGameView.h"
 #include "CGameController.h"
 
-sf::Sprite* get_sprite(const char* texture_filename) {
-    sf::Texture texture;
-    if (!texture.loadFromFile(texture_filename)) {
-        std::cout << "failed to load dog.jpeg" ;
-    }
-    sf::Sprite* sprite = new sf::Sprite();
-    sprite->setTexture(texture);
-
-    return sprite;
-}
-void sfml_server() {
-    // NETWORKING - SERVER
-    sf::TcpListener listener;
-    // bind the listener to a port
-    if (listener.listen(4567) != sf::Socket::Done) {
-        std::cout << "Can't listen\n";
-    }
-    while(true) {
-
-        // accept a new connection
-        sf::TcpSocket client;
-        if (listener.accept(client) != sf::Socket::Done) {
-            // error...
-        }
-
-        char data[100];
-        std::size_t received;
-
-        // TCP socket:
-        if (client.receive(data, 100, received) != sf::Socket::Done)
-        {
-            // error...
-        } else {
-            std::cout << "Received " << received << " bytes" << std::endl;
-            break;
-        }
-
-    }
-}
-
-const int WINDOW_WIDTH1 = 1720.f;
-const int WINDOW_HEIGHT2 = 1080.f;
-
 int main() {
+
     CAssets::GetInstance().Load();
     CGameModel Model;
 
