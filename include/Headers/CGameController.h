@@ -12,6 +12,7 @@ public:
     ~CGameController();
 
     void Run();
+    void HandleEvent(const sf::Event&);
 };
 
 
