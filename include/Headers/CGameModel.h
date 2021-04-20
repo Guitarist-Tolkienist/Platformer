@@ -6,11 +6,11 @@
 #include <algorithm>
 #include <array>
 
-
+// Forward declaration
 class CGameView;
 class CGameController;
 
-class CGameModel {
+class CGameModel: public IUpdatable{
     int players_quantity;
 
     CPlayer* m_Player;
@@ -18,13 +18,11 @@ protected:
 
     static const int NPC_QUANTITY =  1;
     std::array<CPlayer, NPC_QUANTITY> m_NPC;
-//    CPlayer* m_NPC;
 public:
     CGameModel();
     ~CGameModel();
 
-    // todo inherit from some base class which implement Tick method
-    void Tick(float DeltaTime);
+    virtual void Tick(float DeltaTime) override;
 
     friend class CGameView;
     friend class CGameController;
