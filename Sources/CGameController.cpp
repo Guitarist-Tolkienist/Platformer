@@ -25,6 +25,31 @@ void CGameController::Run() {
 }
 
 void CGameController::HandleEvent(const sf::Event& Event) {
+    if(sf::Joystick::isConnected(0)) {
+        unsigned int buttonCount = sf::Joystick::getButtonCount(0);
+
+        for (int i = 0; i < buttonCount; ++i) {
+            if (sf::Joystick::isButtonPressed(0, i)) {
+                std::cout << i << " is pressed of" << buttonCount << "\n";
+
+                if (i == 3) {
+                    m_GameModel->m_Player->ChangeYState(AxisYMovement::Jump);
+                }
+            }
+        }
+
+        float x = sf::Joystick::getAxisPosition(0, sf::Joystick::X);
+        if (x == 0.0) {
+            m_GameModel->m_Player->ChangeXState(AxisXMovement::Static);
+        }
+
+        if (x < 0.0) {
+            m_GameModel->m_Player->ChangeXState(AxisXMovement::Left);
+        } else if (x > 0.0) {
+            m_GameModel->m_Player->ChangeXState(AxisXMovement::Right);
+        }
+
+    }
     switch (Event.type) {
         case sf::Event::Closed:
             m_GameView->GetWindow().close();
@@ -36,14 +61,14 @@ void CGameController::HandleEvent(const sf::Event& Event) {
                     break;
                 case sf::Keyboard::Left:
                 case sf::Keyboard::A:
-                    m_GameModel->m_Player->Move(MovingDirection::Left);
+                    m_GameModel->m_Player->ChangeXState(AxisXMovement::Left);
                     break;
                 case sf::Keyboard::Right:
                 case sf::Keyboard::D:
-                    m_GameModel->m_Player->Move(MovingDirection::Right);
+                    m_GameModel->m_Player->ChangeXState(AxisXMovement::Right);
                     break;
                 case sf::Keyboard::Space:
-                    m_GameModel->m_Player->Move(MovingDirection::Up);
+                    m_GameModel->m_Player->ChangeYState(AxisYMovement::Jump);
                     break;
                 default:
                     break;
@@ -55,7 +80,7 @@ void CGameController::HandleEvent(const sf::Event& Event) {
                 case sf::Keyboard::A:
                 case sf::Keyboard::Right:
                 case sf::Keyboard::D:
-                    m_GameModel->m_Player->Move(MovingDirection::None);
+                    m_GameModel->m_Player->ChangeXState(AxisXMovement::Static);
                     break;
                 default:
                     break;

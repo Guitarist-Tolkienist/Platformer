@@ -15,14 +15,14 @@ class CGameView : public sf::Drawable, public sf::Transformable {
     sf::Text m_Text;
 
     sf::Clock clock1;
-    sf::Time elapsed_time;
 protected:
     float m_FPS;
+    float m_DeltaTime = 0.0f;
     int m_Frames1 = 0;
     int m_Frames2 = 0;
 
-    float time1;
-    float time2;
+    float sTime1 = 0.0f;
+    float sTime2 = 0.0f;
 public:
     CGameView(CGameModel* Model);
     ~CGameView();
@@ -30,6 +30,10 @@ public:
     sf::RenderWindow& GetWindow();
     bool Init();
     void Render();
+
+private:
+    void drawFPS();
+    void UpdateTime();
 
 public:
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;

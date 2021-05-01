@@ -9,20 +9,16 @@
 const int MAX_PLAYER_NAME_SIZE = 15;
 const int MAX_PLAYER_HP = 275;
 const char PLAYER_SPRITE_FILE_NAME[] = "../Resources/knight.png";
+const char PLAYER_NAME[] = "Player";
 
 class CPlayer: public CEntity {
     char* m_Name;
-
-    bool m_bIsJumping;
-
-    int m_StartFrame;
-    const static int JUMP_FRAMES = 30;
 
 public:
     CPlayer();
     CPlayer(const CHitBox&);
     CPlayer(const CHitBox&, const char*);
-    ~CPlayer();
+    virtual ~CPlayer() override;
 
     void setName(char*);
     char* getName() const;
@@ -30,7 +26,6 @@ public:
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
     void Tick(float DeltaTime) override;
-    void Jump();
 
     // OVERLOADED OPERATORS
 public:

@@ -1,13 +1,14 @@
 #include <sstream>
 #include "CEntity.h"
 #include "CGameView.h"
+#include <cmath>
+
 using sf::Keyboard;
 
 // Constructors
 CEntity::CEntity():
     sf::Drawable(),
-    bIsHitBoxSelected(HITBOX_SELECTED_DEFAULT),
-    m_MovingStep(MOVING_STEP_DEFAULT) {
+    bIsHitBoxSelected(HITBOX_SELECTED_DEFAULT) {
         SetSprite(DEFAULT_ENTITY_SPRITE_FILE_NAME);
 
         m_Text = sf::Text("location: ", CAssets::GetInstance().m_Font, 20);
@@ -17,14 +18,13 @@ CEntity::CEntity(const CHitBox& HitBox, const char* spriteFilename, float HP):
     sf::Drawable(),
     m_HitBox(HitBox),
     m_Health(HP),
-    bIsHitBoxSelected(HITBOX_SELECTED_DEFAULT),
-    m_MovingStep(MOVING_STEP_DEFAULT) {
+    bIsHitBoxSelected(HITBOX_SELECTED_DEFAULT) {
         SetSprite(spriteFilename);
 
         m_Text = sf::Text("", CAssets::GetInstance().m_Font, 20);
 
         if (m_HitBox.GetPosition().m_Y + m_HitBox.GetScale().m_Y < EARTH_LOCATION) {
-            m_bIsFalling = true;
+            EMovement.YMovement = AxisYMovement::Fall;
         }
     }
 
@@ -41,28 +41,15 @@ CEntity::~CEntity() {
 }
 
 
-void CEntity::Move(MovingState key) {
-    switch (key) {
-        case MovingState::Left:
-        case MovingState::Right:
-            m_bMoving = true;
-            break;
-        case MovingState::None:
-            m_bMoving = false;
-            break;
-        default: break;
-    }
+void CEntity::SetSprite(const char* TextureFilename) {
+    if (!TextureFilename) return;
 
-    m_MovingState = key;
-}
-
-void CEntity::SetSprite(const char* textureFilename) {
     // todo complete condition
     if (!m_Texture) {
     }
 
     m_Texture = new sf::Texture();
-    if (!m_Texture->loadFromFile(textureFilename)) {
+    if (!m_Texture->loadFromFile(TextureFilename)) {
         std::cout << "failed to load texture file" ;
     }
 
@@ -76,7 +63,17 @@ void CEntity::SetSprite(const char* textureFilename) {
     m_Sprite->scale(spriteWidth, spriteHeight);
 }
 
-void CEntity::SetLocation(SVector_2D NewLocation) {
+void CEntity::SetLocation(const SVector_2D& NewLocation) {
+    // check if the character
+    // goes beyond the window borders
+    if (NewLocation.m_X < 0) {
+        return;
+    }
+    if (NewLocation.m_X + m_HitBox.GetScale().m_X > WINDOW_WIDTH) {
+        return;
+    }
+
+    // Set Location to HitBox & Sprite
     m_HitBox.SetPosition(NewLocation);
     m_Sprite->setPosition(NewLocation.m_X, NewLocation.m_Y);
 }
@@ -85,15 +82,32 @@ SVector_2D CEntity::GetLocation() const{
     return m_HitBox.GetPosition();
 }
 
+SVector_2D CEntity::GetScale() const {
+    return m_HitBox.GetScale();
+}
+
+
+// UPDATE LOGIC
+void CEntity::Tick(float DeltaTime) {
+    MoveX(DeltaTime);
+    MoveY(DeltaTime);
+}
+
 void CEntity::UpdateText() {
     std::ostringstream buff1;
     buff1 << m_HitBox.GetPosition().m_X;
     std::string s1(buff1.str());
+
     std::ostringstream buff2;
     buff2 << m_HitBox.GetPosition().m_Y;
     std::string s2(buff2.str());
 
-    std::string pos(s1 + ",  " + s2);
+    std::ostringstream buff3;
+    buff3 << m_FallVector.m_Y;
+    std::string s3(buff3.str());
+
+
+    std::string pos(s1 + ",  " + s2 + " | " + s3);
     m_Text.setString(pos.c_str());
 
     SVector_2D TextLocation = m_HitBox.GetPosition();
@@ -101,22 +115,117 @@ void CEntity::UpdateText() {
     m_Text.setPosition(TextLocation.m_X, TextLocation.m_Y);
 }
 
-SVector_2D CEntity::GetScale() const {
-    return m_HitBox.GetScale();
-}
-/*
-void CEntity::draw(sf::RenderTarget &target, sf::RenderStates states) const {
-    SDot pos = m_HitBox.GetPosition();
-    SDot scale = m_HitBox.GetScale();
 
-    if (bIsHitBoxSelected) {
-        sf::RectangleShape PlayerHitBox(sf::Vector2f(scale.m_X, scale.m_Y));
-        PlayerHitBox.setPosition(sf::Vector2f(pos.m_X, pos.m_Y));
-        PlayerHitBox.setOutlineThickness(1.0f);
-        PlayerHitBox.setOutlineColor(sf::Color::Red);
-        PlayerHitBox.setFillColor(sf::Color::Transparent);
+// MOVING ENTITY
+void CEntity::Jump(float DeltaTime) {
+    if (!IsJumping()) return;
 
-        target.draw(PlayerHitBox, states);
+    SVector_2D NewLoc = m_HitBox.GetPosition();
+    NewLoc += m_JumpVector * DeltaTime;
+    m_JumpVector += GRAVITY_VECTOR * DeltaTime;
+
+    if (m_JumpVector.m_Y >= 0.0) {
+        ChangeYState(AxisYMovement::Fall);
+        return;
     }
-    target.draw(*m_Sprite, states);
-}*/
+
+    SetLocation(NewLoc);
+}
+
+void CEntity::Fall(float DeltaTime) {
+    if (!IsFalling()) return;
+
+    SVector_2D NewLoc = m_HitBox.GetPosition();
+    NewLoc += m_FallVector * DeltaTime;
+    m_FallVector += GRAVITY_VECTOR * DeltaTime;
+
+    float EntityFeetLocation_Y = m_HitBox.GetPosition().m_Y + m_HitBox.GetScale().m_Y;
+
+    if (EntityFeetLocation_Y < EARTH_LOCATION) {
+        SetLocation(NewLoc);
+    } else {
+        ChangeYState(AxisYMovement::Static);
+    }
+}
+
+void CEntity::MoveX(float DeltaTime) {
+    switch (EMovement.XMovement) {
+        case AxisXMovement::Left: {
+            SVector_2D NewPos = GetLocation();
+
+            if (EMovement.YMovement != AxisYMovement::Static) {
+                NewPos -= (WALK_VECTOR * 0.7) * DeltaTime;
+            } else {
+                NewPos -= WALK_VECTOR * DeltaTime;
+            }
+
+            SetLocation(NewPos);
+        } break;
+        case AxisXMovement::Right: {
+            SVector_2D NewPos = GetLocation();
+
+            if (EMovement.YMovement != AxisYMovement::Static) {
+                NewPos += (WALK_VECTOR * 0.7) * DeltaTime;
+            } else {
+                NewPos += WALK_VECTOR * DeltaTime;
+            }
+
+
+            SetLocation(NewPos);
+        } break;
+        default: break;
+    }
+}
+
+void CEntity::MoveY(float DeltaTime) {
+    switch (EMovement.YMovement) {
+        case AxisYMovement::Jump:
+            Jump(DeltaTime);
+            break;
+        case AxisYMovement::Fall:
+            Fall(DeltaTime);
+            break;
+        default:
+            break;
+    }
+}
+
+
+// MOVING STATES
+bool CEntity::IsFalling() const {
+    return EMovement.YMovement == AxisYMovement::Fall;
+}
+
+bool CEntity::IsJumping() const {
+    return EMovement.YMovement == AxisYMovement::Jump;
+}
+
+bool CEntity::IsRunning() const {
+    return EMovement.XMovement != AxisXMovement::Static;
+}
+
+void CEntity::ChangeState(const EntityMovement& State) {
+    EMovement = State;
+}
+
+void CEntity::ChangeXState(const AxisXMovement& State) {
+    EMovement.XMovement = State;
+}
+
+void CEntity::ChangeYState(const AxisYMovement& State) {
+    if (State == EMovement.YMovement) return;
+
+    if (State == AxisYMovement::Jump && EMovement.YMovement == AxisYMovement::Fall) return;
+
+    if (State == AxisYMovement::Jump) {
+        m_JumpVector = JUMP_VECTOR;
+    }
+
+    if (State == AxisYMovement::Static) {
+        m_JumpVector = ZeroVector_2D;
+        m_FallVector = ZeroVector_2D;
+    }
+
+    EMovement.YMovement = State;
+}
+

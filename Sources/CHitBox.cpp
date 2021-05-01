@@ -3,7 +3,7 @@
 
 // CONSTRUCTORS
 CHitBox::CHitBox() :
-    m_Position(0, 0),
+    m_Position(0, 10),
     m_Scale(HITBOX_SCALE_DEFAULT, HITBOX_SCALE_DEFAULT){}
 
 CHitBox::CHitBox(const SVector_2D& Pos, const SVector_2D& Scale):
