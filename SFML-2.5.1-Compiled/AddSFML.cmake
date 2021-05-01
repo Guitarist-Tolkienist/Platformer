@@ -5,7 +5,7 @@
 # Tasks are added as separate sub-projects so as compilation errors in
 # one task don't affect another task.
 
-project(Platformer)
+project(${PROJECT_NAME})
 
 set(CMAKE_CXX_STANDARD 14)
 
