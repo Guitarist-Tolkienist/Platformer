@@ -10,11 +10,11 @@ include_directories(include)
 include_directories(include/Headers)
 include_directories(Sources)
 file(GLOB SOURCE_FILES "Sources/*.cpp" Timer/CTimer.cpp)
+
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+
 
 # SFML
 include(SFML-2.5.1-Compiled/AddSFML.cmake)
 
 target_link_libraries(${PROJECT_NAME} sfml-audio sfml-graphics sfml-window sfml-system sfml-network)
-
-message(${CMAKE_BUILD_TYPE})
