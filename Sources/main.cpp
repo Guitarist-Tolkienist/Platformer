@@ -6,9 +6,10 @@
 #include "CGameModel.h"
 #include "CGameView.h"
 #include "CGameController.h"
+#include "../Timer/CTimer.h"
+
 
 int main() {
-
     CAssets::GetInstance().Load();
     CGameModel Model;
 
@@ -16,7 +17,10 @@ int main() {
 
     CGameController Controller(&Model, &View);
 
+    CTimer timer;
     Controller.Run();
+
+    std::cout << timer.elapsed();
     return 0;
 
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Platformer", sf::Style::Default);
