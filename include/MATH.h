@@ -7,20 +7,27 @@ namespace _2D {
         float m_X;
         float m_Y;
 
-        SVector_2D() :
-                m_X(0),
-                m_Y(0) {}
+        SVector_2D();
+        SVector_2D(float x, float y);
+        SVector_2D(const SVector_2D& Vector_2D);
 
-        SVector_2D(float x, float y) :
-                m_X(x),
-                m_Y(y) {}
+        // OPERATORS
+        void operator+=(const SVector_2D& Vector2);
+        void operator-=(const SVector_2D& Vector2);
 
-        SVector_2D(const SVector_2D &Dot) {
-            m_X = Dot.m_X;
-            m_Y = Dot.m_Y;
+        SVector_2D& operator=(const SVector_2D& Vector2);
+
+        friend SVector_2D operator*(const SVector_2D &V1, float value) {
+            return SVector_2D(V1.m_X * value, V1.m_Y * value);
+        }
+
+        friend SVector_2D operator*(float value, const SVector_2D &V1) {
+            return V1 * value;
         }
     };
 
+
+    const SVector_2D ZeroVector_2D(0.0f, 0.0f);
 }
 
 #endif //PLATFORMER_MATH_H
