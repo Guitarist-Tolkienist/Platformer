@@ -27,6 +27,8 @@ CEntity::CEntity(const CHitBox& HitBox, const char* spriteFilename, float HP):
         }
     }
 
+float CEntity::WalkSpeedDelay = 0.7;
+
 CEntity::~CEntity() {
     if (m_Texture) {
         delete m_Texture;
@@ -63,13 +65,9 @@ void CEntity::SetSprite(const char* TextureFilename) {
 
 void CEntity::SetLocation(const SVector_2D& NewLocation) {
     // check if the character
-    // goes beyond the window borders
-    if (NewLocation.X < 0) {
-        return;
-    }
-    if (NewLocation.X + m_HitBox.GetScale().X > WINDOW_WIDTH) {
-        return;
-    }
+    // goes beyond the Level borders
+    if (NewLocation.X < 0) return;
+    if (NewLocation.X + m_HitBox.GetScale().X > LEVEL_WIDTH) return;
 
     // Set Location to HitBox & Sprite
     m_HitBox.SetPosition(NewLocation);
@@ -174,7 +172,7 @@ void CEntity::MoveX(float DeltaTime) {
             SVector_2D NewPos = GetLocation();
 
             if (EMovement.YMovement != AxisYMovement::Static) {
-                NewPos -= (WALK_VECTOR * 0.7) * DeltaTime;
+                NewPos -= (WALK_VECTOR * WalkSpeedDelay) * DeltaTime;
             } else {
                 NewPos -= WALK_VECTOR * DeltaTime;
             }
@@ -185,7 +183,7 @@ void CEntity::MoveX(float DeltaTime) {
             SVector_2D NewPos = GetLocation();
 
             if (EMovement.YMovement != AxisYMovement::Static) {
-                NewPos += (WALK_VECTOR * 0.7) * DeltaTime;
+                NewPos += (WALK_VECTOR * WalkSpeedDelay) * DeltaTime;
             } else {
                 NewPos += WALK_VECTOR * DeltaTime;
             }

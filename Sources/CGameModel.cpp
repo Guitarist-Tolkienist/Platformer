@@ -6,7 +6,7 @@ CGameModel::CGameModel(): players_quantity(1) {
 
     m_EarthPlatform = new CHitBox();
     m_EarthPlatform->SetPosition(SVector_2D(0, EARTH_LOCATION));
-    m_EarthPlatform->SetScale(SVector_2D(WINDOW_WIDTH, WINDOW_HEIGHT - EARTH_LOCATION));
+    m_EarthPlatform->SetScale(SVector_2D(LEVEL_WIDTH, WINDOW_HEIGHT - EARTH_LOCATION));
 
     m_Player = new (std::nothrow) CPlayer(CHitBox(PLayerPos, PLayerScale));
     if (!m_Player) {

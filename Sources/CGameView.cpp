@@ -1,7 +1,10 @@
 #include "CGameView.h"
 #include <sstream>
 
-CGameView::CGameView(CGameModel* Model) : m_GameModel(Model) {
+
+CGameView::CGameView(CGameModel* Model) :
+    m_GameModel(Model),
+    m_View(sf::Vector2f(WINDOW_WIDTH/2, WINDOW_HEIGHT/2), sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT)){
     Init();
 }
 
@@ -22,20 +25,29 @@ void CGameView::Render() {
     m_Window.clear();
 
     m_GameModel->Tick(m_DeltaTime);
+
+    // Draw Regular Stuff
+    ChangeViewCenter();
+    m_Window.setView(m_View);
+    m_Window.draw(*this);
+
+    // Draw UI
+    m_Window.setView(m_Window.getDefaultView());
+
     // todo change signature
     UpdateTime();
     drawFPS();
-
-    m_Window.draw(*this);
 
     m_Window.display();
 
     sf::sleep(sf::seconds(1.0/60));
 }
+
 void CGameView::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     m_GameModel->m_EarthPlatform->draw(target, states);
 
     target.draw(*m_GameModel->m_Player, states);
+
     for (int i = 0; i < CGameModel::NPC_QUANTITY; ++i) {
         target.draw(m_GameModel->m_NPC[i], states);
     }
@@ -70,4 +82,28 @@ void CGameView::UpdateTime() {
         sTime1 = sTime2;
     }
 
+}
+
+void CGameView::ResizeView() {
+    float AspectRatio = float(m_Window.getSize().x)/float(m_Window.getSize().y);
+
+    m_View.setSize(WINDOW_HEIGHT * AspectRatio, WINDOW_HEIGHT);
+}
+
+void CGameView::ChangeViewCenter() {
+    sf::Vector2f ViewCenter(m_GameModel->m_Player->GetLocation().X, m_GameModel->m_Player->GetLocation().Y);
+
+    ViewCenter.x += m_GameModel->m_Player->GetScale().X / 2;
+
+    // CLAMP THE VIEW IN LEVEL WIDTH
+    if(ViewCenter.x + m_View.getSize().x/2 > LEVEL_WIDTH) {
+        ViewCenter.x = m_View.getCenter().x;
+    }
+    if(ViewCenter.x < WINDOW_WIDTH/2) {
+        ViewCenter.x = m_View.getCenter().x;
+    }
+
+    ViewCenter.y += m_GameModel->m_Player->GetScale().Y / 2;
+
+    m_View.setCenter(ViewCenter);
 }

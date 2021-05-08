@@ -9,11 +9,12 @@ class CGameView : public sf::Drawable, public sf::Transformable {
     CGameModel* m_GameModel;
 
     sf::RenderWindow m_Window;
+    sf::View m_View;
     sf::Text m_Text;
 
     sf::Clock clock1;
 protected:
-    float m_FPS;
+    float m_FPS = 0.f;
     float m_DeltaTime = 0.0f;
     int m_Frames1 = 0;
     int m_Frames2 = 0;
@@ -27,6 +28,9 @@ public:
     sf::RenderWindow& GetWindow();
     bool Init();
     void Render();
+
+    void ChangeViewCenter();
+    void ResizeView();
 
 private:
     void drawFPS();

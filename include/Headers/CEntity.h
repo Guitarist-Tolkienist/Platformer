@@ -48,6 +48,8 @@ protected:
     SVector_2D m_WalkVector = ZeroVector_2D;
     SVector_2D m_JumpVector = ZeroVector_2D;
     SVector_2D m_FallVector = ZeroVector_2D;
+
+    static float WalkSpeedDelay;
 public:
     EntityMovement EMovement;
     const CHitBox* m_RunningPlatform = nullptr;

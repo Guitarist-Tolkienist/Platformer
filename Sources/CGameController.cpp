@@ -62,6 +62,9 @@ void CGameController::HandleEvent(const sf::Event& Event) {
         case sf::Event::Closed:
             m_GameView->GetWindow().close();
             break;
+        case sf::Event::Resized:
+            m_GameView->ResizeView();
+            break;
         case sf::Event::KeyPressed:
             switch (Event.key.code) {
                 case sf::Keyboard::Escape:
