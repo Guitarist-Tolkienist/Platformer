@@ -12,6 +12,8 @@ public:
     ~CGameController();
 
     void Run();
+
+    void HandleJoyStick(const sf::Event&);
     void HandleEvent(const sf::Event&);
 };
 

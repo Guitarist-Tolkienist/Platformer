@@ -24,7 +24,7 @@ void CGameController::Run() {
     }
 }
 
-void CGameController::HandleEvent(const sf::Event& Event) {
+void CGameController::HandleJoyStick(const sf::Event& Event) {
     if(sf::Joystick::isConnected(0)) {
         unsigned int buttonCount = sf::Joystick::getButtonCount(0);
 
@@ -53,6 +53,11 @@ void CGameController::HandleEvent(const sf::Event& Event) {
         }
 
     }
+}
+
+void CGameController::HandleEvent(const sf::Event& Event) {
+    HandleJoyStick(Event);
+
     switch (Event.type) {
         case sf::Event::Closed:
             m_GameView->GetWindow().close();
