@@ -81,6 +81,9 @@ void CGameController::HandleEvent(const sf::Event& Event) {
                 case sf::Keyboard::Space:
                     m_GameModel->m_Player->ChangeYState(AxisYMovement::Jump);
                     break;
+                case sf::Keyboard::P:
+                    m_GameView->ToggleFPS();
+                    break;
                 default:
                     break;
             }

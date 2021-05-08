@@ -11,7 +11,7 @@
 class CGameView;
 class CGameController;
 
-const float LEVEL_WIDTH = 2000.f;
+const float LEVEL_WIDTH = 5000.f;
 const float LEVEL_HEIGHT = 650.f;
 
 const float WINDOW_WIDTH = 1300.f;

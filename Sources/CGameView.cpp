@@ -21,6 +21,10 @@ bool CGameView::Init() {
     return true;
 }
 
+sf::RenderWindow& CGameView::GetWindow() {
+    return m_Window;
+}
+
 void CGameView::Render() {
     m_Window.clear();
 
@@ -32,11 +36,7 @@ void CGameView::Render() {
     m_Window.draw(*this);
 
     // Draw UI
-    m_Window.setView(m_Window.getDefaultView());
-
-    // todo change signature
-    UpdateTime();
-    drawFPS();
+    DrawUI();
 
     m_Window.display();
 
@@ -52,10 +52,6 @@ void CGameView::draw(sf::RenderTarget &target, sf::RenderStates states) const {
         target.draw(m_GameModel->m_NPC[i], states);
     }
 
-}
-
-sf::RenderWindow& CGameView::GetWindow() {
-    return m_Window;
 }
 
 void CGameView::drawFPS() {
@@ -84,6 +80,17 @@ void CGameView::UpdateTime() {
 
 }
 
+void CGameView::DrawUI() {
+    m_Window.setView(m_Window.getDefaultView());
+
+    // todo change signature
+    UpdateTime();
+
+    if (m_bDrawFPS) {
+        drawFPS();
+    }
+}
+
 void CGameView::ResizeView() {
     float AspectRatio = float(m_Window.getSize().x)/float(m_Window.getSize().y);
 
@@ -103,7 +110,14 @@ void CGameView::ChangeViewCenter() {
         ViewCenter.x = m_View.getCenter().x;
     }
 
-    ViewCenter.y += m_GameModel->m_Player->GetScale().Y / 2;
+    ViewCenter.y += m_GameModel->m_Player->GetScale().Y / 2 - 200;
 
     m_View.setCenter(ViewCenter);
 }
+
+
+// FLAGS
+void CGameView::ToggleFPS() {
+    m_bDrawFPS = !m_bDrawFPS;
+}
+

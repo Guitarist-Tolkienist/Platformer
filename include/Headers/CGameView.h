@@ -13,6 +13,8 @@ class CGameView : public sf::Drawable, public sf::Transformable {
     sf::Text m_Text;
 
     sf::Clock clock1;
+
+    bool m_bDrawFPS = false;
 protected:
     float m_FPS = 0.f;
     float m_DeltaTime = 0.0f;
@@ -32,12 +34,16 @@ public:
     void ChangeViewCenter();
     void ResizeView();
 
+    // FLAGS
+    void ToggleFPS();
+
 private:
     void drawFPS();
     void UpdateTime();
 
 public:
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+    void DrawUI();
 };
 
 #endif //PLATFORMER_CGAMEVIEW_H
