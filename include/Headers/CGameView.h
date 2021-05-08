@@ -5,9 +5,6 @@
 #include "CGameModel.h"
 #include "CAssets.h"
 
-const float WINDOW_WIDTH = 1000.f;
-const float WINDOW_HEIGHT = 800.f;
-
 class CGameView : public sf::Drawable, public sf::Transformable {
     CGameModel* m_GameModel;
 

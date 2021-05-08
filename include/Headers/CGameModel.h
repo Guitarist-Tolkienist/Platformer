@@ -10,6 +10,9 @@
 class CGameView;
 class CGameController;
 
+const float WINDOW_WIDTH = 1300.f;
+const float WINDOW_HEIGHT = 650.f;
+
 class CGameModel: public IUpdatable{
     int players_quantity;
 
