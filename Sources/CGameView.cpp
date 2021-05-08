@@ -33,11 +33,13 @@ void CGameView::Render() {
     sf::sleep(sf::seconds(1.0/60));
 }
 void CGameView::draw(sf::RenderTarget &target, sf::RenderStates states) const {
-    target.draw(*m_GameModel->m_Player, states);
+    m_GameModel->m_EarthPlatform->draw(target, states);
 
+    target.draw(*m_GameModel->m_Player, states);
     for (int i = 0; i < CGameModel::NPC_QUANTITY; ++i) {
-//        target.draw(m_GameModel->m_NPC[i], states);
+        target.draw(m_GameModel->m_NPC[i], states);
     }
+
 }
 
 sf::RenderWindow& CGameView::GetWindow() {

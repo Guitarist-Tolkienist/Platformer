@@ -32,9 +32,9 @@ SVector_2D CHitBox::SetScale(const SVector_2D& NewScale) {
 // OVERRIDDEN
 void CHitBox::draw(sf::RenderTarget &target, sf::RenderStates states) const {
 
-    sf::RectangleShape PlayerHitBox(sf::Vector2f(m_Scale.m_X, m_Scale.m_Y));
+    sf::RectangleShape PlayerHitBox(sf::Vector2f(m_Scale.X, m_Scale.Y));
 
-    PlayerHitBox.setPosition(sf::Vector2f(m_Position.m_X, m_Position.m_Y));
+    PlayerHitBox.setPosition(sf::Vector2f(m_Position.X, m_Position.Y));
     PlayerHitBox.setOutlineThickness(1.0f);
     PlayerHitBox.setOutlineColor(sf::Color::Red);
     PlayerHitBox.setFillColor(sf::Color::Transparent);

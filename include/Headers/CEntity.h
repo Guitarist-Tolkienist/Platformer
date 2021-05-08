@@ -14,21 +14,7 @@ const _2D::SVector_2D JUMP_VECTOR(0, -500.0f);
 const _2D::SVector_2D GRAVITY_VECTOR(0, 500.0f);
 
 // todo remove from this file
-const float EARTH_LOCATION = 550.0f;
-
-
-
-enum class MovingState {
-    Static, // When Entity is on earth todo rename
-    Fall,
-    Jump
-};
-
-enum class MovingDirection {
-    Left,
-    Right,
-    None
-};
+const float EARTH_LOCATION = 600.0f;
 
 
 enum class AxisXMovement {
@@ -36,6 +22,7 @@ enum class AxisXMovement {
     Right,
     Static
 };
+
 enum class AxisYMovement {
     Jump,
     Fall,
@@ -47,28 +34,31 @@ struct EntityMovement {
     AxisYMovement YMovement = AxisYMovement::Static;
 };
 
+
 class CEntity: public sf::Drawable, public IUpdatable {
 protected:
-    CHitBox m_HitBox;
-
-    EntityMovement EMovement;
-
     float m_Health;
 
-    SVector_2D m_WalkVector = ZeroVector_2D;
-    SVector_2D m_JumpVector = ZeroVector_2D;
-    SVector_2D m_FallVector = ZeroVector_2D;
+    CHitBox m_HitBox;
 
     // APPEARANCE
     sf::Texture* m_Texture;
     sf::Sprite* m_Sprite;
+
+    SVector_2D m_WalkVector = ZeroVector_2D;
+    SVector_2D m_JumpVector = ZeroVector_2D;
+    SVector_2D m_FallVector = ZeroVector_2D;
 public:
+    EntityMovement EMovement;
+    const CHitBox* m_RunningPlatform = nullptr;
+
     CEntity();
     CEntity(const CHitBox& HitBox, const char* spriteFilename, float HP);
     virtual ~CEntity();
 
     SVector_2D GetLocation() const;
     SVector_2D GetScale() const;
+    const CHitBox* GetHitBox() const;
 
 protected:
     void SetLocation(const SVector_2D& NewLocation);
@@ -80,6 +70,8 @@ private:
 
     void Fall(float DeltaTime);
     void Jump(float DeltaTime);
+
+    void HandleGravity();
 
 public:
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const = 0;

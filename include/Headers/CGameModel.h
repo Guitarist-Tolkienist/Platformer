@@ -1,10 +1,11 @@
 #ifndef PLATFORMER_CGAMEMODEL_H
 #define PLATFORMER_CGAMEMODEL_H
 
-#include "CPlayer.h"
 #include <chrono>
 #include <algorithm>
 #include <array>
+#include "CPlayer.h"
+#include "CMapObject.h"
 
 // Forward declaration
 class CGameView;
@@ -17,10 +18,12 @@ class CGameModel: public IUpdatable{
     int players_quantity;
 
     CPlayer* m_Player;
-protected:
 
-    static const int NPC_QUANTITY =  1;
+    CHitBox* m_EarthPlatform;
+
+    static const int NPC_QUANTITY = 2;
     std::array<CPlayer, NPC_QUANTITY> m_NPC;
+    std::array<CMapObject, 0> m_Objects;
 public:
     CGameModel();
     ~CGameModel();

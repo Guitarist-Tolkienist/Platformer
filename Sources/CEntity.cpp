@@ -1,11 +1,10 @@
 #include <sstream>
 #include "CEntity.h"
 #include "CGameView.h"
-#include <cmath>
 
 using sf::Keyboard;
 
-// Constructors
+// CONSTRUCTORS
 CEntity::CEntity():
     sf::Drawable(),
     bIsHitBoxSelected(HITBOX_SELECTED_DEFAULT) {
@@ -23,7 +22,7 @@ CEntity::CEntity(const CHitBox& HitBox, const char* spriteFilename, float HP):
 
         m_Text = sf::Text("", CAssets::GetInstance().m_Font, 20);
 
-        if (m_HitBox.GetPosition().m_Y + m_HitBox.GetScale().m_Y < EARTH_LOCATION) {
+        if (m_HitBox.GetPosition().Y + m_HitBox.GetScale().Y < EARTH_LOCATION) {
             EMovement.YMovement = AxisYMovement::Fall;
         }
     }
@@ -40,7 +39,6 @@ CEntity::~CEntity() {
     }
 }
 
-
 void CEntity::SetSprite(const char* TextureFilename) {
     if (!TextureFilename) return;
 
@@ -56,26 +54,26 @@ void CEntity::SetSprite(const char* TextureFilename) {
     m_Sprite = new sf::Sprite();
     m_Sprite->setTexture(*m_Texture);
 
-    m_Sprite->setPosition(m_HitBox.GetPosition().m_X, m_HitBox.GetPosition().m_Y);
+    m_Sprite->setPosition(m_HitBox.GetPosition().X, m_HitBox.GetPosition().Y);
 
-    float spriteWidth = m_HitBox.GetScale().m_X/(float)m_Texture->getSize().x;
-    float spriteHeight = m_HitBox.GetScale().m_Y/(float)m_Texture->getSize().y;
+    float spriteWidth = m_HitBox.GetScale().X / (float)m_Texture->getSize().x;
+    float spriteHeight = m_HitBox.GetScale().Y / (float)m_Texture->getSize().y;
     m_Sprite->scale(spriteWidth, spriteHeight);
 }
 
 void CEntity::SetLocation(const SVector_2D& NewLocation) {
     // check if the character
     // goes beyond the window borders
-    if (NewLocation.m_X < 0) {
+    if (NewLocation.X < 0) {
         return;
     }
-    if (NewLocation.m_X + m_HitBox.GetScale().m_X > WINDOW_WIDTH) {
+    if (NewLocation.X + m_HitBox.GetScale().X > WINDOW_WIDTH) {
         return;
     }
 
     // Set Location to HitBox & Sprite
     m_HitBox.SetPosition(NewLocation);
-    m_Sprite->setPosition(NewLocation.m_X, NewLocation.m_Y);
+    m_Sprite->setPosition(NewLocation.X, NewLocation.Y);
 }
 
 SVector_2D CEntity::GetLocation() const{
@@ -86,24 +84,29 @@ SVector_2D CEntity::GetScale() const {
     return m_HitBox.GetScale();
 }
 
+const CHitBox* CEntity::GetHitBox() const {
+    return &m_HitBox;
+}
 
 // UPDATE LOGIC
 void CEntity::Tick(float DeltaTime) {
     MoveX(DeltaTime);
     MoveY(DeltaTime);
+
+    HandleGravity();
 }
 
 void CEntity::UpdateText() {
     std::ostringstream buff1;
-    buff1 << m_HitBox.GetPosition().m_X;
+    buff1 << m_HitBox.GetPosition().X;
     std::string s1(buff1.str());
 
     std::ostringstream buff2;
-    buff2 << m_HitBox.GetPosition().m_Y;
+    buff2 << m_HitBox.GetPosition().Y;
     std::string s2(buff2.str());
 
     std::ostringstream buff3;
-    buff3 << m_FallVector.m_Y;
+    buff3 << m_FallVector.Y;
     std::string s3(buff3.str());
 
 
@@ -111,8 +114,26 @@ void CEntity::UpdateText() {
     m_Text.setString(pos.c_str());
 
     SVector_2D TextLocation = m_HitBox.GetPosition();
-    TextLocation.m_Y -= 15;
-    m_Text.setPosition(TextLocation.m_X, TextLocation.m_Y);
+    TextLocation.Y -= 15;
+    m_Text.setPosition(TextLocation.X, TextLocation.Y);
+}
+
+void CEntity::HandleGravity() {
+    if (!m_RunningPlatform) return;
+
+    if (GetHitBox()->GetPosition().X >= m_RunningPlatform->GetPosition().X + m_RunningPlatform->GetScale().X ||
+        GetHitBox()->GetPosition().X + GetHitBox()->GetScale().X <= m_RunningPlatform->GetPosition().X) {
+        ChangeYState(AxisYMovement::Fall);
+    }
+
+    if (EMovement.YMovement == AxisYMovement::Jump) {
+        return;
+    }
+
+    float EntityFeetLocation_Y = m_HitBox.GetPosition().Y + m_HitBox.GetScale().Y;
+    if (EntityFeetLocation_Y < m_RunningPlatform->GetPosition().Y) {
+        ChangeYState(AxisYMovement::Fall);
+    }
 }
 
 
@@ -124,7 +145,7 @@ void CEntity::Jump(float DeltaTime) {
     NewLoc += m_JumpVector * DeltaTime;
     m_JumpVector += GRAVITY_VECTOR * DeltaTime;
 
-    if (m_JumpVector.m_Y >= 0.0) {
+    if (m_JumpVector.Y >= 0.0) {
         ChangeYState(AxisYMovement::Fall);
         return;
     }
@@ -139,9 +160,8 @@ void CEntity::Fall(float DeltaTime) {
     NewLoc += m_FallVector * DeltaTime;
     m_FallVector += GRAVITY_VECTOR * DeltaTime;
 
-    float EntityFeetLocation_Y = m_HitBox.GetPosition().m_Y + m_HitBox.GetScale().m_Y;
-
-    if (EntityFeetLocation_Y < EARTH_LOCATION) {
+    float EntityFeetLocation_Y = m_HitBox.GetPosition().Y + m_HitBox.GetScale().Y;
+    if (EntityFeetLocation_Y < m_RunningPlatform->GetPosition().Y) {
         SetLocation(NewLoc);
     } else {
         ChangeYState(AxisYMovement::Static);

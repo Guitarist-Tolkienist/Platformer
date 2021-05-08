@@ -35,6 +35,9 @@ void CGameController::HandleEvent(const sf::Event& Event) {
                 if (i == 3) {
                     m_GameModel->m_Player->ChangeYState(AxisYMovement::Jump);
                 }
+                if (i == 9) {
+                    m_GameView->GetWindow().close();
+                }
             }
         }
 
